@@ -1,0 +1,69 @@
+<div id="particle-field" aria-hidden="true"></div>
+<script>
+(() => {
+  const root = document.documentElement, key = 'medicare-theme';
+  const valid = ['light','dark','ocean'];
+  function setTheme(theme) {
+    if (!valid.includes(theme)) theme = 'light';
+    if (theme === 'light') root.removeAttribute('data-theme');
+    else root.dataset.theme = theme;
+    try { localStorage.setItem(key, theme); } catch (_) {}
+    document.querySelectorAll('[data-theme-choice]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.themeChoice === theme)));
+  }
+  let initial = 'light';
+  try { initial = localStorage.getItem(key) || 'light'; } catch (_) {}
+  setTheme(initial);
+  document.querySelectorAll('[data-theme-choice]').forEach(b => b.addEventListener('click', () => setTheme(b.dataset.themeChoice)));
+  const field = document.getElementById('particle-field');
+  let last = 0, count = 0;
+  const MAX_PARTICLES = 28; // Tune this value to change the maximum simultaneous particles
+  if (field && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.addEventListener('pointermove', e => {
+      if (e.pointerType === 'touch' || performance.now() - last < 45 || count >= MAX_PARTICLES) return;
+      last = performance.now();
+      const p = document.createElement('span'); p.className = 'particle';
+      p.style.left = e.clientX + 'px'; p.style.top = e.clientY + 'px';
+      p.style.setProperty('--dx', (Math.random()*48-24)+'px'); p.style.setProperty('--dy', (Math.random()*48-24)+'px');
+      field.appendChild(p); count++;
+      p.addEventListener('animationend', () => { p.remove(); count--; }, {once:true});
+    }, {passive:true});
+  }
+  // Client-side table pagination: keeps existing Flask search and CRUD routes intact.
+  document.querySelectorAll('.table-wrap table').forEach((table, tableIndex) => {
+    const body = table.tBodies[0];
+    if (!body) return;
+    const allRows = Array.from(body.rows).filter(row => !row.querySelector('.empty-state'));
+    if (allRows.length <= 8) return;
+    const pageSize = 8; let page = 0;
+    const pager = document.createElement('div'); pager.className = 'table-pagination';
+    pager.innerHTML = '<span class="pagination-info" aria-live="polite"></span><div class="pagination-controls"><button type="button" class="btn btn-secondary pagination-prev">Previous</button><button type="button" class="btn btn-secondary pagination-next">Next</button></div>';
+    table.closest('.table-wrap').insertAdjacentElement('afterend', pager);
+    const info = pager.querySelector('.pagination-info'), prev = pager.querySelector('.pagination-prev'), next = pager.querySelector('.pagination-next');
+    function render() {
+      const pages = Math.max(1, Math.ceil(allRows.length / pageSize)); page = Math.min(page, pages - 1);
+      allRows.forEach((row, i) => row.hidden = !(i >= page * pageSize && i < (page + 1) * pageSize));
+      info.textContent = `Showing ${Math.min(allRows.length, page * pageSize + 1)}–${Math.min(allRows.length, (page + 1) * pageSize)} of ${allRows.length}`;
+      prev.disabled = page === 0; next.disabled = page >= pages - 1;
+    }
+    prev.addEventListener('click', () => { page--; render(); }); next.addEventListener('click', () => { page++; render(); }); render();
+  });
+  // Accessible confirmation for destructive actions and status changes.
+  document.querySelectorAll('form[onsubmit*="confirm("]').forEach(form => {
+    form.addEventListener('submit', event => {
+      const attr = form.getAttribute('onsubmit') || '';
+      const match = attr.match(/confirm\(['"](.*?)['"]\)/);
+      if (match && !window.confirm(match[1])) event.preventDefault();
+    });
+  });
+  // Basic browser-side validation feedback without replacing server validation.
+  document.querySelectorAll('form').forEach(form => {
+    form.addEventListener('submit', () => {
+      form.querySelectorAll(':invalid').forEach(el => el.setAttribute('aria-invalid', 'true'));
+    });
+    form.querySelectorAll('input,select,textarea').forEach(el => {
+      el.addEventListener('input', () => { if (el.checkValidity()) el.removeAttribute('aria-invalid'); });
+      el.addEventListener('change', () => { if (el.checkValidity()) el.removeAttribute('aria-invalid'); });
+    });
+  });
+})();
+</script>

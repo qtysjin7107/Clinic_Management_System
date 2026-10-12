@@ -1,0 +1,8 @@
+<aside class="sidebar">
+<a href="{{ url_for('dashboard') }}" class="brand"><span class="brand-mark">+</span><span><span class="brand-name">MediCare</span><span class="brand-subtitle">Clinic management</span></span></a>
+<div class="nav-label">Workspace</div><nav>
+<a class="nav-link {% if active_page == 'dashboard' %}active{% endif %}" href="{{ url_for('dashboard') }}"><span class="nav-icon">▦</span> Dashboard</a>
+<a class="nav-link {% if active_page == 'patients' %}active{% endif %}" href="{{ url_for('patients') }}"><span class="nav-icon">♙</span> Patients</a>
+<a class="nav-link {% if active_page == 'doctors' %}active{% endif %}" href="{{ url_for('doctors') }}"><span class="nav-icon">⚕</span> Doctors</a>
+<a class="nav-link {% if active_page == 'appointments' %}active{% endif %}" href="{{ url_for('appointments') }}"><span class="nav-icon">▣</span> Appointments</a></nav>
+<div class="sidebar-bottom"><div class="nav-label">Account</div><a class="nav-link" href="{{ url_for('logout') }}"><span class="nav-icon">↪</span> Sign out</a><div class="sidebar-user"><strong>{{ session.get('username','User') }}</strong><small>{{ session.get('role','STAFF') }} account</small></div></div></aside>
