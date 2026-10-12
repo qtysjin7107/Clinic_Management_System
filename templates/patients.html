@@ -1,0 +1,109 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Management</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <main class="login-container">
+        <section class="login-card" style="max-width: 900px;">
+            <p class="eyebrow">CLINIC MANAGEMENT SYSTEM</p>
+            <h1>Patient Management</h1>
+            <p><a href="{{ url_for('dashboard') }}">← Dashboard</a></p>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% for category, message in messages %}
+                    <p class="message {{ category }}">{{ message }}</p>
+                {% endfor %}
+            {% endwith %}
+
+            <h2>Register patient</h2>
+
+            <form method="POST" action="{{ url_for('patients') }}">
+                <label for="full_name">Full name *</label>
+                <input id="full_name" name="full_name"
+                       maxlength="100" required>
+
+                <label for="date_of_birth">Date of birth</label>
+                <input id="date_of_birth" name="date_of_birth"
+                       type="date">
+
+                <label for="gender">Gender</label>
+                <select id="gender" name="gender">
+                    <option value="">Select</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                </select>
+
+                <label for="phone">Phone</label>
+                <input id="phone" name="phone"
+                       type="tel" maxlength="20">
+
+                <label for="address">Address</label>
+                <textarea id="address" name="address"
+                          maxlength="250" rows="2"></textarea>
+
+                <button type="submit">Register patient</button>
+            </form>
+
+            <hr>
+
+            <h2>Patient records</h2>
+
+            <form method="GET" action="{{ url_for('patients') }}">
+                <label for="q">Search by name or phone</label>
+                <input id="q" name="q" value="{{ search }}">
+                <button type="submit">Search</button>
+            </form>
+
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Date of birth</th>
+                            <th>Gender</th>
+                            <th>Phone</th>
+                            <th>Address</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in patients %}
+                        <tr>
+                            <td>{{ p[0] }}</td>
+                            <td>{{ p[1] }}</td>
+                            <td>{{ p[2].strftime('%Y-%m-%d') if p[2] else '' }}</td>
+                            <td>{{ p[3] or '' }}</td>
+                            <td>{{ p[4] or '' }}</td>
+                            <td>{{ p[5] or '' }}</td>
+                            <td>
+                                <a href="{{ url_for('edit_patient', patient_id=p[0]) }}">
+                                    Edit
+                                </a>
+
+                                <form method="POST"
+                                      action="{{ url_for('delete_patient', patient_id=p[0]) }}"
+                                      onsubmit="return confirm('Delete this patient?');">
+                                    <button type="submit">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="7">No patients found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

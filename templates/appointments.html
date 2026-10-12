@@ -1,0 +1,172 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointment Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        body { background: #f5f7fa; }
+        .page-wrap { max-width: 1250px; margin: 30px auto; padding: 0 20px; }
+        .panel { background: white; padding: 24px; margin-bottom: 24px; border-radius: 10px; box-shadow: 0 2px 10px #00000012; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+        .field label { display: block; font-weight: 600; margin-bottom: 6px; }
+        .field input, .field select, .field textarea { box-sizing: border-box; width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
+        .btn { display: inline-block; padding: 9px 13px; border: 0; border-radius: 5px; cursor: pointer; text-decoration: none; font-size: 14px; }
+        .btn-primary { background: #1769aa; color: white; }
+        .btn-secondary { background: #e8edf2; color: #222; }
+        .btn-danger { background: #c62828; color: white; }
+        .table-wrap { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { text-align: left; padding: 12px; border-bottom: 1px solid #e4e4e4; vertical-align: top; }
+        th { background: #f3f6f9; }
+        .search-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+        .search-row input { flex: 1; min-width: 200px; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
+        .flash-message { padding: 12px; margin-bottom: 10px; border-radius: 5px; background: #edf2f7; }
+        .flash-message.error, .flash-message.danger { background: #fdeaea; color: #922; }
+        .flash-message.success { background: #e7f6eb; color: #185b2c; }
+        .status-form { display: flex; gap: 6px; min-width: 180px; }
+        .status-form select { max-width: 130px; padding: 7px; }
+        .status-form button { padding: 7px; }
+        .empty-note { color: #555; }
+    </style>
+</head>
+<body>
+<main class="page-wrap">
+    <p><a href="{{ url_for('dashboard') }}">← Back to Dashboard</a></p>
+    <h1>Appointment Management</h1>
+    <p>Book appointments and track their status.</p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="flash-message {{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <section class="panel">
+        <h2>Book an Appointment</h2>
+
+        {% if not patients %}
+            <p class="empty-note">Register at least one patient before booking.</p>
+        {% endif %}
+        {% if not doctors %}
+            <p class="empty-note">Register at least one doctor before booking.</p>
+        {% endif %}
+
+        <form method="POST" action="{{ url_for('appointments') }}">
+            <div class="form-grid">
+                <div class="field">
+                    <label for="patient_id">Patient *</label>
+                    <select id="patient_id" name="patient_id" required>
+                        <option value="">Select a patient</option>
+                        {% for patient in patients %}
+                            <option value="{{ patient[0] }}">
+                                {{ patient[1] }} (ID: {{ patient[0] }})
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="doctor_id">Doctor *</label>
+                    <select id="doctor_id" name="doctor_id" required>
+                        <option value="">Select a doctor</option>
+                        {% for doctor in doctors %}
+                            <option value="{{ doctor[0] }}">
+                                {{ doctor[1] }} — {{ doctor[2] }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="appointment_date">Date and Time *</label>
+                    <input id="appointment_date" name="appointment_date"
+                           type="datetime-local" min="{{ now }}" required>
+                </div>
+
+                <div class="field">
+                    <label for="reason">Reason for Visit</label>
+                    <textarea id="reason" name="reason" maxlength="500"
+                              rows="3" placeholder="Describe the reason for the visit"></textarea>
+                </div>
+            </div>
+
+            <p>
+                <button type="submit" class="btn btn-primary"
+                        {% if not patients or not doctors %}disabled{% endif %}>
+                    Book Appointment
+                </button>
+            </p>
+        </form>
+    </section>
+
+    <section class="panel">
+        <h2>Appointment Records</h2>
+
+        <form class="search-row" method="GET" action="{{ url_for('appointments') }}">
+            <input type="search" name="search" value="{{ search_query }}"
+                   placeholder="Search by patient or doctor name">
+            <button class="btn btn-primary" type="submit">Search</button>
+            <a class="btn btn-secondary" href="{{ url_for('appointments') }}">Clear</a>
+        </form>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Patient</th>
+                        <th>Doctor</th>
+                        <th>Date and Time</th>
+                        <th>Reason</th>
+                        <th>Status</th>
+                        <th>Update Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for appointment in appointments %}
+                    <tr>
+                        <td>{{ appointment[0] }}</td>
+                        <td>{{ appointment[1] }}</td>
+                        <td>
+                            {{ appointment[2] }}<br>
+                            <small>{{ appointment[3] }}</small>
+                        </td>
+                        <td>
+                            {% if appointment[4] %}
+                                {{ appointment[4].strftime("%d-%m-%Y %I:%M %p") }}
+                            {% endif %}
+                        </td>
+                        <td>{{ appointment[5] or "—" }}</td>
+                        <td>{{ appointment[6] }}</td>
+                        <td>
+                            <form class="status-form" method="POST"
+                                  action="{{ url_for('update_appointment_status', appointment_id=appointment[0]) }}">
+                                <select name="status" aria-label="Appointment status">
+                                    {% for status in ["BOOKED", "COMPLETED", "CANCELLED"] %}
+                                        <option value="{{ status }}"
+                                            {% if appointment[6] == status %}selected{% endif %}>
+                                            {{ status }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                <button class="btn btn-primary" type="submit">Save</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7">No appointments found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+</body>
+</html>

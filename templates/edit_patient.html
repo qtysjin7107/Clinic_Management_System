@@ -1,0 +1,55 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Patient</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <main class="login-container">
+        <section class="login-card">
+            <h1>Edit patient</h1>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% for category, message in messages %}
+                    <p class="message {{ category }}">{{ message }}</p>
+                {% endfor %}
+            {% endwith %}
+
+            <form method="POST">
+                <label for="full_name">Full name *</label>
+                <input id="full_name" name="full_name"
+                       value="{{ patient[1] }}" maxlength="100" required>
+
+                <label for="date_of_birth">Date of birth</label>
+                <input id="date_of_birth" name="date_of_birth"
+                       type="date"
+                       value="{{ patient[2].strftime('%Y-%m-%d') if patient[2] else '' }}">
+
+                <label for="gender">Gender</label>
+                <select id="gender" name="gender">
+                    <option value="">Select</option>
+                    <option value="Male" {% if patient[3] == 'Male' %}selected{% endif %}>Male</option>
+                    <option value="Female" {% if patient[3] == 'Female' %}selected{% endif %}>Female</option>
+                    <option value="Other" {% if patient[3] == 'Other' %}selected{% endif %}>Other</option>
+                </select>
+
+                <label for="phone">Phone</label>
+                <input id="phone" name="phone"
+                       value="{{ patient[4] or '' }}" maxlength="20">
+
+                <label for="address">Address</label>
+                <textarea id="address" name="address"
+                          maxlength="250" rows="3">{{ patient[5] or '' }}</textarea>
+
+                <button type="submit">Save changes</button>
+            </form>
+
+            <p><a href="{{ url_for('patients') }}">Cancel</a></p>
+        </section>
+    </main>
+</body>
+</html>

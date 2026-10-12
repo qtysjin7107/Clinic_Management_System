@@ -1,0 +1,147 @@
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #172b4d;
+    background: linear-gradient(135deg, #e8f3ff, #f4f7fb);
+}
+
+.login-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 420px;
+    padding: 36px;
+    background: white;
+    border-radius: 18px;
+    box-shadow: 0 18px 55px rgba(25, 55, 90, 0.12);
+}
+
+.eyebrow {
+    color: #167d8d;
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 1.5px;
+}
+
+h1 {
+    margin-bottom: 8px;
+    font-size: 30px;
+}
+
+.subtitle,
+.footer-text {
+    color: #6b778c;
+    font-size: 14px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 28px;
+}
+
+label {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+input {
+    padding: 12px;
+    margin-bottom: 10px;
+    border: 1px solid #d6deea;
+    border-radius: 8px;
+    font-size: 15px;
+}
+
+input:focus {
+    outline: 2px solid #71b7c5;
+    border-color: transparent;
+}
+
+button {
+    padding: 13px;
+    margin-top: 8px;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    background: #126e82;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #0e596a;
+}
+
+.message {
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.message.error {
+    color: #9d2424;
+    background: #fff0f0;
+}
+
+.footer-text {
+    margin-top: 24px;
+    text-align: center;
+}
+
+table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+th,
+td {
+    padding: 12px;
+    border-bottom: 1px solid #e1e7ef;
+    text-align: left;
+    vertical-align: top;
+}
+
+th {
+    color: #31506d;
+    background: #f2f7fa;
+}
+
+td form {
+    margin: 8px 0 0;
+}
+
+select,
+textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #d6deea;
+    border-radius: 8px;
+    font: inherit;
+}
+
+hr {
+    margin: 28px 0;
+    border: 0;
+    border-top: 1px solid #e1e7ef;
+}
+
+a {
+    color: #126e82;
+}
