@@ -1,7 +1,14 @@
-<div id="particle-field" aria-hidden="true"></div>
+<div id="particle-field" aria-hidden="true" data-csrf-token="{{ csrf_token }}"></div>
 <script>
 (() => {
   const root = document.documentElement, key = 'medicare-theme';
+  const csrfField = document.getElementById('particle-field');
+  const csrfToken = csrfField ? csrfField.dataset.csrfToken : '';
+  document.querySelectorAll('form[method=POST], form[method=post]').forEach(form => {
+    if (csrfToken && !form.querySelector('input[name=csrf_token]')) {
+      const input = document.createElement('input'); input.type='hidden'; input.name='csrf_token'; input.value=csrfToken; form.appendChild(input);
+    }
+  });
   const valid = ['light','dark','ocean'];
   function setTheme(theme) {
     if (!valid.includes(theme)) theme = 'light';
@@ -53,6 +60,13 @@
       const attr = form.getAttribute('onsubmit') || '';
       const match = attr.match(/confirm\(['"](.*?)['"]\)/);
       if (match && !window.confirm(match[1])) event.preventDefault();
+    });
+  });
+  // Client-side table filter complements server-side search and filters.
+  document.querySelectorAll('[data-table-filter]').forEach(input => {
+    const table = document.querySelector(input.dataset.tableFilter); if (!table || !table.tBodies[0]) return;
+    input.addEventListener('input', () => { const q=input.value.trim().toLowerCase();
+      Array.from(table.tBodies[0].rows).forEach(row => { if (!row.querySelector('.empty-state')) row.hidden = !row.textContent.toLowerCase().includes(q); });
     });
   });
   // Basic browser-side validation feedback without replacing server validation.

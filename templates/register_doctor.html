@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Doctor Application | MediCare Clinic</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<div class="login-page">
+  <section class="login-visual">
+    <a href="{{ url_for('login') }}" class="brand login-brand"><span class="brand-mark">+</span><span><span class="brand-name">MediCare</span><span class="brand-subtitle">Clinic management</span></span></a>
+    <h1>Join the MediCare care team.</h1>
+    <p>Submit your professional details for review by the clinic administrator.</p>
+    <div class="panel"><strong>What happens next?</strong><p>Your application stays pending until an administrator reviews it. It will not appear in the public doctor directory or become bookable before approval.</p></div>
+  </section>
+  <section class="login-form-side"><div class="login-card registration-card">
+    <div class="theme-picker" role="group" aria-label="Choose appearance"><button type="button" class="theme-button" data-theme-choice="light" aria-label="Light theme">☀</button><button type="button" class="theme-button" data-theme-choice="dark" aria-label="Dark theme">☾</button><button type="button" class="theme-button" data-theme-choice="ocean" aria-label="Ocean theme">◉</button></div>
+    <h2>Doctor application</h2><p>Provide accurate professional information. Fields marked * are required.</p>
+    {% include "_flash.html" %}
+    <form method="POST" action="{{ url_for('public_doctor_registration') }}" novalidate>
+      <div class="field"><label for="full_name">Full name *</label><input id="full_name" name="full_name" maxlength="100" autocomplete="name" required autofocus></div>
+      <div class="field"><label for="specialization">Specialization *</label><input id="specialization" name="specialization" maxlength="100" required placeholder="e.g. General Medicine"></div>
+      <div class="form-grid">
+        <div class="field"><label for="phone">Phone number</label><input id="phone" name="phone" type="tel" maxlength="20" pattern="[+()0-9 .-]{7,20}" autocomplete="tel"></div>
+        <div class="field"><label for="email">Email address</label><input id="email" name="email" type="email" maxlength="254" autocomplete="email"></div>
+        <div class="field"><label for="consultation_fee">Proposed consultation fee</label><input id="consultation_fee" name="consultation_fee" type="number" min="0" max="99999999.99" step="0.01" placeholder="Optional"></div>
+      </div>
+      <button class="btn btn-primary" type="submit">Submit for review →</button>
+    </form>
+    <p class="muted mt-20">Submitting this form does not create a doctor login account or guarantee approval.</p>
+    <p><a href="{{ url_for('public_patient_registration') }}">Register as a patient instead</a> · <a href="{{ url_for('login') }}">Staff sign in</a></p>
+  </div></section>
+</div>
+{% include "_effects.html" %}
+</body></html>

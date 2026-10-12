@@ -1,0 +1,489 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Patient Registration | MediCare Clinic</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        :root {
+            --reg-bg: #f0f6f8;
+            --reg-card: rgba(255,255,255,.94);
+            --reg-text: #203447;
+            --reg-muted: #64788a;
+            --reg-border: #dce7ec;
+            --reg-accent: #159b91;
+        }
+
+        :root[data-theme="dark"] {
+            --reg-bg: #09151e;
+            --reg-card: #142632;
+            --reg-text: #e4eff5;
+            --reg-muted: #a4b7c3;
+            --reg-border: #304653;
+            --reg-accent: #4bd6c5;
+        }
+
+        :root[data-theme="ocean"] {
+            --reg-bg: #0b1d32;
+            --reg-card: #12304a;
+            --reg-text: #e7f4ff;
+            --reg-muted: #a2bfd7;
+            --reg-border: #31516a;
+            --reg-accent: #69c9ff;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            color: var(--reg-text);
+            background:
+                radial-gradient(ellipse at top left, #159b9120, transparent 45%),
+                var(--reg-bg);
+        }
+
+        .registration-layout {
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: minmax(280px, .85fr) minmax(0, 1.15fr);
+        }
+
+        .registration-intro {
+            padding: 60px clamp(24px, 5vw, 76px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: linear-gradient(145deg, #102b40, #175c63);
+            color: white;
+        }
+
+        .registration-intro h1 {
+            margin: 38px 0 14px;
+            font-size: clamp(30px, 4vw, 48px);
+            line-height: 1.15;
+            color: white;
+        }
+
+        .registration-intro p {
+            max-width: 420px;
+            line-height: 1.8;
+            color: #d4e7ec;
+        }
+
+        .reg-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: white;
+            font-size: 22px;
+            font-weight: 800;
+        }
+
+        .reg-brand-icon {
+            display: grid;
+            place-items: center;
+            width: 45px;
+            height: 45px;
+            border-radius: 13px;
+            background: #159b91;
+            font-size: 29px;
+        }
+
+        .registration-main {
+            padding: 35px 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .registration-card {
+            width: 100%;
+            max-width: 650px;
+            padding: clamp(22px, 4vw, 42px);
+            background: var(--reg-card);
+            color: var(--reg-text);
+            border: 1px solid var(--reg-border);
+            border-radius: 22px;
+            box-shadow: 0 18px 55px rgba(10, 35, 50, .12);
+        }
+
+        .reg-theme-picker {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .reg-theme-picker button {
+            width: 38px;
+            height: 38px;
+            border: 1px solid var(--reg-border);
+            border-radius: 10px;
+            background: transparent;
+            color: var(--reg-text);
+            cursor: pointer;
+        }
+
+        .reg-theme-picker button[aria-pressed="true"] {
+            border-color: var(--reg-accent);
+            background: color-mix(in srgb, var(--reg-accent) 14%, transparent);
+        }
+
+        .registration-card h2 {
+            margin: 0 0 8px;
+            font-size: 29px;
+            color: var(--reg-text);
+        }
+
+        .reg-description {
+            margin: 0 0 25px;
+            line-height: 1.7;
+            color: var(--reg-muted);
+        }
+
+        .reg-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0 18px;
+        }
+
+        .reg-field {
+            margin-bottom: 19px;
+        }
+
+        .reg-field.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .reg-field label {
+            display: block;
+            margin-bottom: 7px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--reg-text);
+        }
+
+        .reg-field input,
+        .reg-field select,
+        .reg-field textarea {
+            display: block;
+            width: 100%;
+            min-height: 46px;
+            padding: 12px 13px;
+            border: 1px solid var(--reg-border);
+            border-radius: 10px;
+            background: var(--reg-card);
+            color: var(--reg-text);
+            font: inherit;
+            outline: none;
+        }
+
+        .reg-field textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        .reg-field input:focus,
+        .reg-field select:focus,
+        .reg-field textarea:focus {
+            border-color: var(--reg-accent);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--reg-accent) 18%, transparent);
+        }
+
+        .reg-field input[aria-invalid="true"],
+        .reg-field select[aria-invalid="true"] {
+            border-color: #dc4545;
+        }
+
+        .reg-submit {
+            width: 100%;
+            min-height: 49px;
+            padding: 13px 18px;
+            border: 0;
+            border-radius: 11px;
+            background: var(--reg-accent);
+            color: #fff;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: filter .2s, transform .2s;
+        }
+
+        .reg-submit:hover {
+            filter: brightness(.94);
+            transform: translateY(-1px);
+        }
+
+        .reg-note {
+            margin-top: 20px;
+            font-size: 12px;
+            line-height: 1.7;
+            color: var(--reg-muted);
+        }
+
+        .reg-links {
+            margin-top: 18px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            font-size: 13px;
+        }
+
+        .reg-links a {
+            color: var(--reg-accent);
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .reg-flash {
+            padding: 12px 14px;
+            margin-bottom: 18px;
+            border-radius: 9px;
+            border: 1px solid var(--reg-border);
+            overflow-wrap: anywhere;
+        }
+
+        .reg-flash.error,
+        .reg-flash.danger {
+            color: #a32121;
+            background: #fff0f0;
+        }
+
+        .reg-flash.success {
+            color: #176a42;
+            background: #e9f9ef;
+        }
+
+        .reg-flash.warning {
+            color: #805700;
+            background: #fff7df;
+        }
+
+        @media (max-width: 800px) {
+            .registration-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .registration-intro {
+                padding: 30px 25px;
+            }
+
+            .registration-intro h1 {
+                margin-top: 22px;
+                font-size: 30px;
+            }
+
+            .registration-main {
+                padding: 22px 14px;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .reg-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .reg-field.full-width {
+                grid-column: auto;
+            }
+
+            .registration-card {
+                padding: 22px 17px;
+                border-radius: 15px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                transition: none !important;
+                animation: none !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="registration-layout">
+
+    <aside class="registration-intro">
+        <div class="reg-brand">
+            <span class="reg-brand-icon">+</span>
+            <span>MediCare Clinic</span>
+        </div>
+
+        <h1>Your care journey starts here.</h1>
+
+        <p>
+            Register your patient profile so our clinic can maintain
+            accurate details and coordinate your visits.
+        </p>
+
+        <p>
+            Already registered?
+            <a href="{{ url_for('login') }}"
+               style="color:#8ce6dc;font-weight:bold">
+                Return to staff sign in
+            </a>
+        </p>
+    </aside>
+
+    <main class="registration-main">
+        <section class="registration-card">
+
+            <div class="reg-theme-picker"
+                 role="group"
+                 aria-label="Choose appearance">
+                <button type="button" data-reg-theme="light"
+                        aria-label="Light theme" aria-pressed="true">☀</button>
+                <button type="button" data-reg-theme="dark"
+                        aria-label="Dark theme" aria-pressed="false">☾</button>
+                <button type="button" data-reg-theme="ocean"
+                        aria-label="Ocean theme" aria-pressed="false">◉</button>
+            </div>
+
+            <h2>Patient registration</h2>
+            <p class="reg-description">
+                Enter your details below. Fields marked * are required.
+            </p>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="reg-flash {{ category }}" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST"
+                  action="{{ url_for('public_patient_registration') }}"
+                  id="patient-registration-form">
+
+                <input type="hidden" name="csrf_token"
+                       value="{{ csrf_token }}">
+
+                <div class="reg-grid">
+                    <div class="reg-field full-width">
+                        <label for="full_name">Full name *</label>
+                        <input id="full_name" name="full_name"
+                               maxlength="100" autocomplete="name"
+                               required autofocus>
+                    </div>
+
+                    <div class="reg-field">
+                        <label for="date_of_birth">Date of birth</label>
+                        <input id="date_of_birth" name="date_of_birth"
+                               type="date" max="{{ today }}"
+                               autocomplete="bday">
+                    </div>
+
+                    <div class="reg-field">
+                        <label for="gender">Gender</label>
+                        <select id="gender" name="gender">
+                            <option value="">Prefer not to say</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="reg-field full-width">
+                        <label for="phone">Phone number</label>
+                        <input id="phone" name="phone" type="tel"
+                               maxlength="20" autocomplete="tel"
+                               pattern="[+()0-9 .-]{7,20}"
+                               placeholder="e.g. +91 98765 43210">
+                    </div>
+
+                    <div class="reg-field full-width">
+                        <label for="address">Address</label>
+                        <textarea id="address" name="address"
+                                  maxlength="250"
+                                  autocomplete="street-address"
+                                  rows="3"></textarea>
+                    </div>
+                </div>
+
+                <button class="reg-submit" type="submit">
+                    Register patient profile →
+                </button>
+            </form>
+
+            <p class="reg-note">
+                This creates a patient record, not a login account.
+                Contact the clinic to book an appointment.
+            </p>
+
+            <div class="reg-links">
+                <a href="{{ url_for('public_doctor_registration') }}">
+                    Are you a doctor? Submit an application
+                </a>
+                <a href="{{ url_for('login') }}">Staff sign in</a>
+            </div>
+
+        </section>
+    </main>
+</div>
+
+<script>
+(() => {
+    const root = document.documentElement;
+    const buttons = document.querySelectorAll("[data-reg-theme]");
+    const validThemes = ["light", "dark", "ocean"];
+
+    function applyTheme(theme) {
+        if (!validThemes.includes(theme)) theme = "light";
+
+        if (theme === "light") {
+            root.removeAttribute("data-theme");
+        } else {
+            root.setAttribute("data-theme", theme);
+        }
+
+        buttons.forEach(button => {
+            button.setAttribute(
+                "aria-pressed",
+                String(button.dataset.regTheme === theme)
+            );
+        });
+
+        try {
+            localStorage.setItem("medicare-theme", theme);
+        } catch (_) {}
+    }
+
+    let savedTheme = "light";
+    try {
+        savedTheme = localStorage.getItem("medicare-theme") || "light";
+    } catch (_) {}
+
+    applyTheme(savedTheme);
+
+    buttons.forEach(button => {
+        button.addEventListener("click", () => {
+            applyTheme(button.dataset.regTheme);
+        });
+    });
+
+    const form = document.getElementById("patient-registration-form");
+
+    form.addEventListener("submit", event => {
+        if (!form.checkValidity()) {
+            event.preventDefault();
+            form.reportValidity();
+        }
+    });
+})();
+</script>
+
+</body>
+</html>

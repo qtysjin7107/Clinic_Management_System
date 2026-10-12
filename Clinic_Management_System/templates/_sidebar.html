@@ -1,0 +1,13 @@
+<aside class="sidebar">
+<a href="{{ url_for('dashboard') }}" class="brand"><span class="brand-mark">+</span><span><span class="brand-name">MediCare</span><span class="brand-subtitle">Clinic management</span></span></a>
+<div class="nav-label">Workspace</div><nav>
+<a class="nav-link {% if active_page == 'dashboard' %}active{% endif %}" href="{{ url_for('dashboard') }}"><span class="nav-icon">▦</span> Dashboard</a>
+<a class="nav-link {% if active_page == 'patients' %}active{% endif %}" href="{{ url_for('patients') }}"><span class="nav-icon">♙</span> Patients</a>
+<a class="nav-link {% if active_page == 'doctors' %}active{% endif %}" href="{{ url_for('doctors') }}"><span class="nav-icon">⚕</span> Doctors</a>
+<a class="nav-link {% if active_page == 'appointments' %}active{% endif %}" href="{{ url_for('appointments') }}"><span class="nav-icon">▣</span> Appointments</a>
+<a class="nav-link {% if active_page == 'availability' %}active{% endif %}" href="{{ url_for('availability') }}"><span class="nav-icon">◷</span> Doctor availability</a>
+<a class="nav-link {% if active_page == 'billing' %}active{% endif %}" href="{{ url_for('billing') }}"><span class="nav-icon">＄</span> Billing</a>
+<a class="nav-link {% if active_page == 'reports' %}active{% endif %}" href="{{ url_for('reports') }}"><span class="nav-icon">▤</span> Reports</a>
+<a class="nav-link {% if active_page == 'search' %}active{% endif %}" href="{{ url_for('global_search') }}"><span class="nav-icon">⌕</span> Global search</a>
+{% if session.get('role') == 'ADMIN' %}<a class="nav-link {% if active_page == 'audit' %}active{% endif %}" href="{{ url_for('audit_logs') }}"><span class="nav-icon">◉</span> Audit log</a>{% endif %}</nav>
+<div class="sidebar-bottom"><div class="nav-label">Account</div><form method="POST" action="{{ url_for('logout') }}"><button class="nav-link nav-button" type="submit"><span class="nav-icon">↪</span> Sign out</button></form><div class="sidebar-user"><strong>{{ session.get('username','User') }}</strong><small>{{ session.get('role','STAFF') }} account</small></div></div></aside>
